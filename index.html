@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'">
+  <title>tillclose — cash denomination calculator &amp; daily till closing log</title>
+  <meta name="description" content="Count the cash drawer by denomination, reconcile the counted total against expected cash, and keep a dated closing log that shows which days were short. Private, offline, no accounts.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://sreenivas-sadhu-prabhakara.github.io/tillclose/">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Sreenivas Sadhu Prabhakara">
+  <meta name="keywords" content="cash denomination calculator, till closing log, cash drawer count, cash reconciliation, currency counter, cash count sheet, end of day cash reconciliation, cash register balance, note and coin counter, cash variance">
+  <meta name="theme-color" content="#2B152F" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F4EEF3" media="(prefers-color-scheme: light)">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="tillclose">
+  <meta property="og:title" content="tillclose — cash denomination calculator &amp; daily till closing log">
+  <meta property="og:description" content="Count the drawer by denomination, catch the shortage, close the day. Reconcile counted cash against expected and keep a dated closing log — private and fully offline.">
+  <meta property="og:url" content="https://sreenivas-sadhu-prabhakara.github.io/tillclose/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://sreenivas-sadhu-prabhakara.github.io/tillclose/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="tillclose — an open cash drawer of note bundles and coin stacks with a counted total and a SHORT stamp">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="tillclose — cash denomination calculator &amp; daily till closing log">
+  <meta name="twitter:description" content="Count the drawer by denomination, catch the shortage, close the day. Private and fully offline — your figures never leave the browser.">
+  <meta name="twitter:image" content="https://sreenivas-sadhu-prabhakara.github.io/tillclose/og-image.png">
+  <meta name="twitter:image:alt" content="tillclose — an open cash drawer with a counted total and a SHORT stamp">
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Structured data (data block; survives the CSP) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "tillclose",
+    "description": "A cash denomination calculator and daily till-closing log. Count the drawer by denomination, reconcile the counted total against expected cash, and keep a dated closing history that flags short days. Runs fully offline in your browser.",
+    "url": "https://sreenivas-sadhu-prabhakara.github.io/tillclose/",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Any (modern web browser)",
+    "browserRequirements": "Requires a modern web browser with JavaScript enabled.",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "Sreenivas Sadhu Prabhakara" },
+    "softwareVersion": "0.1.0",
+    "featureList": [
+      "Denomination count grid for 5 currency presets (INR, USD, EUR, GBP, PHP)",
+      "Expected-cash panel: opening float + cash sales − payouts",
+      "Variance verdict: tallied, short or over, to the paise/cent",
+      "Dated closing history with a short/over/tallied summary strip",
+      "Printable closing sheet with sign-off lines",
+      "RFC-4180 CSV export of the closing history",
+      "Runs 100% offline — figures never leave your browser"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I count a cash drawer by denomination?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Enter how many of each note and coin you have into the denomination grid. tillclose multiplies each quantity by its face value in integer minor units (paise or cents) so there is never any rounding drift, and shows a live counted grand total."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How is expected cash calculated for a till close?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Expected cash = opening float + cash sales − payouts. Every figure is hand-entered by you. tillclose cannot read your POS, bank or UPI and never pretends to; the variance is only as good as the numbers you type in."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does short or over mean when closing a till?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The variance is counted cash minus expected cash. If it is negative the drawer is SHORT by that amount; if positive it is OVER; if zero it is TALLIED. This is arithmetic, not fraud detection — a tallied drawer does not by itself prove correct sales recording."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does tillclose send my cash figures anywhere?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. A strict Content-Security-Policy sets connect-src to none, so the page itself blocks every network request — the browser enforces the privacy guarantee, it is not merely promised. Your closings live only in this browser's localStorage; export the CSV to keep a backup."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#drawer">Skip to the drawer count</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="masthead" id="top">
+    <div class="masthead__inner">
+      <div class="brand">
+        <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="2" y="8" width="28" height="18" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.8" class="mk-tray"/>
+          <line x1="12" y1="8" x2="12" y2="26" stroke="currentColor" stroke-width="1.4" class="mk-tray"/>
+          <line x1="20" y1="8" x2="20" y2="26" stroke="currentColor" stroke-width="1.4" class="mk-tray"/>
+          <ellipse cx="16" cy="15" rx="3.1" ry="1.5" class="mk-coin"/>
+          <ellipse cx="16" cy="18" rx="3.1" ry="1.5" class="mk-coin"/>
+          <ellipse cx="16" cy="21" rx="3.1" ry="1.5" class="mk-coin"/>
+        </svg>
+        <span class="brand__word">tillclose</span>
+      </div>
+      <div class="masthead__tools">
+        <label class="field field--currency">
+          <span class="field__label">Currency</span>
+          <select id="currency" class="select">
+            <option value="INR">INR ₹ — Indian Rupee</option>
+            <option value="USD">USD $ — US Dollar</option>
+            <option value="EUR">EUR € — Euro</option>
+            <option value="GBP">GBP £ — Pound Sterling</option>
+            <option value="PHP">PHP ₱ — Philippine Peso</option>
+          </select>
+        </label>
+        <button type="button" class="btn btn--ghost" id="themeToggle" aria-pressed="false">
+          <span class="btn__ico" aria-hidden="true">◑</span><span id="themeLabel">Theme</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Cash reconciliation · denomination count · offline</p>
+      <h1 class="hero__title">Cash Denomination Calculator &amp; Daily Till Closing Log</h1>
+      <p class="hero__lede">
+        Count the drawer, catch the shortage, close the day. Enter how many of each note and coin
+        you hold, reconcile the counted total against what the till <em>should</em> hold, and keep a
+        dated closing history that shows exactly which days were short — and by how much.
+        Nothing you type ever leaves this browser.
+      </p>
+    </div>
+  </section>
+
+  <main>
+    <div class="layout">
+      <!-- ============ DRAWER COUNT ============ -->
+      <section class="card drawer" id="drawer" aria-labelledby="drawerHeading">
+        <div class="card__head">
+          <h2 class="card__title" id="drawerHeading">Count the drawer</h2>
+          <p class="card__sub" id="drawerSub">Tap the steppers or type a quantity for each denomination.</p>
+        </div>
+        <div class="wells" id="wells" aria-live="off"></div>
+
+        <div class="adjust">
+          <div class="adjust__head">
+            <h3 class="adjust__title">Other amount</h3>
+            <button type="button" class="btn btn--tiny" id="addAdjust">+ Add adjustment</button>
+          </div>
+          <p class="adjust__hint">
+            For commemorative coins, withdrawn notes (e.g.&nbsp;₹2000), damaged currency, or anything not
+            in the grid. A positive amount adds to the count; a negative amount removes it.
+          </p>
+          <div id="adjustList" class="adjust__list"></div>
+        </div>
+
+        <div class="counted">
+          <span class="counted__label">Counted total</span>
+          <span class="counted__value" id="countedTotal" aria-live="polite">—</span>
+        </div>
+      </section>
+
+      <!-- ============ EXPECTED + VERDICT ============ -->
+      <aside class="side">
+        <section class="card expected" aria-labelledby="expectedHeading">
+          <div class="card__head">
+            <h2 class="card__title" id="expectedHeading">Expected cash</h2>
+            <p class="card__sub">Opening float + cash sales − payouts. Every figure is hand-entered.</p>
+          </div>
+
+          <label class="money-field">
+            <span class="money-field__label">Opening float</span>
+            <span class="money-field__row">
+              <span class="money-field__sym" id="symFloat">₹</span>
+              <input type="text" inputmode="decimal" id="floatInput" class="money-field__input" placeholder="0.00" autocomplete="off">
+              <button type="button" class="btn btn--tiny" id="carryFloat" title="Prefill from last closing's float">Carry forward</button>
+            </span>
+          </label>
+
+          <label class="money-field">
+            <span class="money-field__label">Cash sales</span>
+            <span class="money-field__row">
+              <span class="money-field__sym" id="symSales">₹</span>
+              <input type="text" inputmode="decimal" id="salesInput" class="money-field__input" placeholder="0.00" autocomplete="off">
+            </span>
+          </label>
+
+          <div class="payouts">
+            <div class="payouts__head">
+              <span class="payouts__label">Payouts</span>
+              <button type="button" class="btn btn--tiny" id="addPayout">+ Add payout</button>
+            </div>
+            <div id="payoutList" class="payouts__list"></div>
+          </div>
+
+          <div class="expected__total">
+            <span>Expected total</span>
+            <span id="expectedTotal" aria-live="polite">—</span>
+          </div>
+        </section>
+
+        <!-- verdict band -->
+        <section class="verdict" id="verdict" aria-live="polite" aria-labelledby="verdictHeading">
+          <h2 class="sr-only" id="verdictHeading">Variance verdict</h2>
+          <div class="verdict__band" id="verdictBand" data-status="none">
+            <span class="verdict__stamp" id="verdictStamp">—</span>
+            <span class="verdict__amt" id="verdictAmt">Enter counts to reconcile</span>
+            <span class="verdict__words" id="verdictWords"></span>
+          </div>
+        </section>
+
+        <!-- close the day -->
+        <section class="card closeform" aria-labelledby="closeHeading">
+          <div class="card__head">
+            <h2 class="card__title" id="closeHeading">Close the day</h2>
+          </div>
+          <label class="field">
+            <span class="field__label">Closing date</span>
+            <input type="date" id="closeDate" class="input">
+          </label>
+          <label class="field">
+            <span class="field__label">Note <span class="field__opt">(optional)</span></span>
+            <textarea id="closeNote" class="input textarea" rows="2" maxlength="500" placeholder="e.g. handover to evening shift"></textarea>
+          </label>
+          <div class="closeform__actions">
+            <button type="button" class="btn btn--primary" id="saveClose">Save closing</button>
+            <button type="button" class="btn btn--ghost" id="printSheet">Print sheet</button>
+          </div>
+          <p class="closeform__msg" id="closeMsg" role="status"></p>
+        </section>
+      </aside>
+    </div>
+
+    <!-- ============ HISTORY ============ -->
+    <section class="card history" id="history" aria-labelledby="historyHeading">
+      <div class="card__head card__head--row">
+        <div>
+          <h2 class="card__title" id="historyHeading">Closing history</h2>
+          <p class="card__sub">One closing per date. Re-saving a date overwrites it.</p>
+        </div>
+        <div class="history__actions">
+          <button type="button" class="btn btn--ghost" id="exportCsv">Export CSV</button>
+          <button type="button" class="btn btn--ghost" id="exportBreakdown">Export breakdown</button>
+        </div>
+      </div>
+      <div class="summary" id="summaryStrip" hidden></div>
+      <div class="history__list" id="historyList"></div>
+    </section>
+
+    <!-- ============ PRINT-ONLY CLOSING SHEET ============ -->
+    <section class="printsheet" id="printSheetEl" aria-hidden="true"></section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="foot">
+    <div class="foot__inner">
+      <p class="foot__disclaimer">
+        <strong>Not an accounting system, and not financial or tax advice.</strong>
+        tillclose is a counting and reconciliation aid. Variance is arithmetic, not fraud detection
+        or an audit — a tallied drawer does not prove correct sales recording. Denomination presets
+        are a snapshot of circulating notes and coins per each central bank at build time
+        (verified 2026-07-22); use the <em>Other amount</em> row for commemoratives, withdrawn
+        ₹2000 notes, or anything not listed. Keep your statutory books separately.
+      </p>
+      <p class="foot__meta">
+        <span>Works 100% offline</span><span class="foot__dot">·</span>
+        <span>No network, no accounts</span><span class="foot__dot">·</span>
+        <span>MIT License</span><span class="foot__dot">·</span>
+        <span>© 2026 Sreenivas&nbsp;Sadhu&nbsp;Prabhakara</span>
+      </p>
+    </div>
+  </footer>
+
+  <script src="data/denominations.js" defer></script>
+  <script src="data/engine.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
