@@ -41,13 +41,13 @@
     --line:      #D8C6D7;
     --ink:       #2B152F;   /* aubergine ink on chalk — ~12:1 */
     --muted:     #6E5270;   /* ~5.7:1 on --bg */
-    --gold:      #8A6320;   /* deepened gold for AA on light (~4.9:1) */
+    --gold:      #78571C;   /* deepened gold — AA on chalk/surface/surface2 (≥5.4:1) */
     --gold-ink:  #FFFFFF;
     --short:     #A32B48;   /* brick-rose deepened for light AA (~5.3:1) */
     --over:      #3F6B41;   /* sage deepened for light AA (~5.1:1) */
     --short-bg:  rgba(163, 43, 72, 0.10);
     --over-bg:   rgba(63, 107, 65, 0.12);
-    --gold-bg:   rgba(138, 99, 32, 0.10);
+    --gold-bg:   rgba(120, 87, 28, 0.10);
     --shadow: 0 16px 40px -28px rgba(43,21,47,0.35);
   }
 }
@@ -55,10 +55,10 @@
 /* … and the same two schemes forced by the manual toggle */
 [data-theme="light"] {
   --bg:        #F4EEF3; --surface: #FBF7FA; --surface2: #F0E6EF; --line: #D8C6D7;
-  --ink:       #2B152F; --muted: #6E5270; --gold: #8A6320; --gold-ink: #FFFFFF;
+  --ink:       #2B152F; --muted: #6E5270; --gold: #78571C; --gold-ink: #FFFFFF;
   --short:     #A32B48; --over: #3F6B41;
   --short-bg:  rgba(163, 43, 72, 0.10); --over-bg: rgba(63, 107, 65, 0.12);
-  --gold-bg:   rgba(138, 99, 32, 0.10);
+  --gold-bg:   rgba(120, 87, 28, 0.10);
   --shadow: 0 16px 40px -28px rgba(43,21,47,0.35);
 }
 [data-theme="dark"] {
